@@ -1,0 +1,12 @@
+[project]
+name = "shadowagent-ml"
+version = "1.0.0"
+description = "Python MARL trainer and resilience analytics for the ShadowAgent sandbox"
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.24", "requests>=2.31", "matplotlib>=3.7"]
+
+[tool.setuptools]
+packages = ["shadowagent_ml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,28 @@
+{
+  "name": "shadowagent",
+  "version": "1.0.0",
+  "description": "ShadowAgent: a multi-agent reinforcement learning sandbox for simulating corporate sabotage and autonomous defense",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "node server/index.js & vite",
+    "dev:server": "node --watch server/index.js",
+    "dev:web": "vite",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "train": "node server/train-cli.js",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.4",
+    "cytoscape": "^3.30.2",
+    "express": "^4.21.1",
+    "marked": "^14.1.3"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

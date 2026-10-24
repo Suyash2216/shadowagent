@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShadowAgent · MARL Sabotage & Defense Sandbox</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">◆</span>
+        <div>
+          <h1>ShadowAgent</h1>
+          <p>Multi-Agent RL sandbox · corporate sabotage vs autonomous defense</p>
+        </div>
+      </div>
+      <form id="controls" class="controls">
+        <label>Scenario <select id="scenario"></select></label>
+        <label>Seed <input id="seed" type="number" value="7" min="0" /></label>
+        <label class="red-label">Red agent <select id="red"></select></label>
+        <label class="blue-label">Blue agent <select id="blue"></select></label>
+        <button type="submit" id="run" class="primary">▶ Run episode</button>
+      </form>
+    </header>
+
+    <main class="layout">
+      <section class="card graph-card">
+        <div class="card-head">
+          <h2>Enterprise topology</h2>
+          <div class="legend">
+            <span><i class="dot clean"></i>clean</span>
+            <span><i class="dot compromised"></i>compromised</span>
+            <span><i class="dot sabotaged"></i>sabotaged</span>
+            <span><i class="dot isolated"></i>quarantined</span>
+            <span><i class="dot honeypot"></i>decoy</span>
+            <span><i class="dot critical"></i>crown jewel</span>
+          </div>
+        </div>
+        <div id="cy" class="cy"></div>
+        <div class="playback">
+          <button id="play" title="Play / pause">Play</button>
+          <button id="stepBack" title="Previous step">&laquo;</button>
+          <button id="stepFwd" title="Next step">&raquo;</button>
+          <input id="timeline" type="range" min="0" max="0" value="0" />
+          <span id="stepLabel">step 0 / 0</span>
+          <select id="speed" title="Playback speed">
+            <option value="900">0.5×</option>
+            <option value="450" selected>1×</option>
+            <option value="200">2×</option>
+            <option value="80">5×</option>
+          </select>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="card kpis" id="kpis"></section>
+        <section class="card feed-card">
+          <div class="card-head"><h2>Live event feed</h2><span id="feedStep" class="muted"></span></div>
+          <ul id="feed" class="feed"></ul>
+        </section>
+      </aside>
+
+      <section class="card tabs-card">
+        <nav class="tabs">
+          <button data-tab="audit" class="active">Audit log</button>
+          <button data-tab="attack">Attack graph</button>
+          <button data-tab="analytics">Resilience analytics</button>
+          <button data-tab="training">MARL training</button>
+          <button data-tab="playbook">IR playbook</button>
+        </nav>
+
+        <div class="tab active" id="tab-audit">
+          <div class="tab-tools">
+            <label>Filter <select id="auditFilter"><option value="all">all actors</option><option value="red">red</option><option value="blue">blue</option><option value="system">system</option></select></label>
+            <label><input type="checkbox" id="auditSuccess" /> successful only</label>
+          </div>
+          <div class="table-wrap"><table id="auditTable"><thead><tr><th>Step</th><th>Actor</th><th>Action</th><th>Target</th><th>Result</th><th>Detail</th></tr></thead><tbody></tbody></table></div>
+        </div>
+
+        <div class="tab" id="tab-attack">
+          <p class="muted">Multi-hop attack graph reconstructed from red-team state transitions (edge labels = step).</p>
+          <div id="attackCy" class="cy small"></div>
+        </div>
+
+        <div class="tab" id="tab-analytics">
+          <div class="tab-tools">
+            <label>Episodes <input id="batchN" type="number" value="100" min="5" max="2000" /></label>
+            <button id="batchBtn" class="primary">Run batch evaluation</button>
+            <span id="batchStatus" class="muted"></span>
+          </div>
+          <div id="analyticsBody" class="analytics"><p class="muted">Run a batch evaluation to measure organisational resilience across many seeded episodes.</p></div>
+        </div>
+
+        <div class="tab" id="tab-training">
+          <div class="tab-tools">
+            <label>Episodes <input id="trainN" type="number" value="2000" min="50" max="20000" /></label>
+            <label><input type="checkbox" id="trainResume" checked /> continue from saved policies</label>
+            <button id="trainBtn" class="primary">Train red + blue (self-play)</button>
+            <span id="trainStatus" class="muted"></span>
+          </div>
+          <div class="charts-row">
+            <div class="chart-box"><canvas id="trainReturns"></canvas></div>
+            <div class="chart-box"><canvas id="trainOutcomes"></canvas></div>
+          </div>
+          <p class="muted small-note">Python trainer: <code>python -m shadowagent_ml.train --episodes 300 --upload</code> trains against this server's gym API and uploads policies here.</p>
+        </div>
+
+        <div class="tab" id="tab-playbook">
+          <div class="tab-tools">
+            <button id="downloadPlaybook">Download Markdown</button>
+            <span class="muted">Generated from the latest batch evaluation.</span>
+          </div>
+          <article id="playbook" class="markdown"><p class="muted">Run a batch evaluation to synthesise an incident-response playbook.</p></article>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
