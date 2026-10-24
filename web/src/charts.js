@@ -1,8 +1,8 @@
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
-Chart.defaults.color = '#9fb0c8';
-Chart.defaults.borderColor = '#243248';
+Chart.defaults.color = '#475467';
+Chart.defaults.borderColor = '#e2e7ef';
 Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
 
 const charts = new Map();
@@ -25,4 +25,4 @@ export function movingAverage(values, window = 50) {
   return out;
 }
 
-export const COLORS = { red: '#ff5b4a', blue: '#4ea1ff', grey: '#7d8aa0', purple: '#a77bff', gold: '#f5c451' };
+export const COLORS = { red: '#e5484d', blue: '#2f6fed', grey: '#b8c1cf', purple: '#7c4dff', gold: '#f5b300' };

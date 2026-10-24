@@ -42,24 +42,24 @@ export function createTopologyGraph(container) {
     wheelSensitivity: 0.2,
     style: [
       { selector: 'node', style: {
-        'background-color': '#1f2a3d', 'border-color': '#3b4c68', 'border-width': 2,
-        label: 'data(short)', color: '#cfd8e6', 'font-size': 9, 'text-valign': 'center', 'text-halign': 'center',
+        'background-color': '#ffffff', 'border-color': '#98a2b3', 'border-width': 2,
+        label: 'data(short)', color: '#1b2333', 'font-size': 10, 'font-weight': 600, 'text-valign': 'center', 'text-halign': 'center',
         width: 'mapData(value, 1, 10, 34, 58)', height: 'mapData(value, 1, 10, 34, 58)',
-        'text-outline-color': '#0d1320', 'text-outline-width': 1,
+        'text-outline-color': '#ffffff', 'text-outline-width': 2,
       } },
-      { selector: 'node[?critical]', style: { shape: 'diamond', 'border-color': '#f5c451' } },
-      { selector: 'node.compromised', style: { 'background-color': '#c0392b', 'border-color': '#ff6b5b' } },
-      { selector: 'node.admin', style: { 'background-color': '#8e1b10' } },
-      { selector: 'node.sabotaged', style: { 'background-color': '#6c2bd9', 'border-color': '#b48cff', 'border-width': 4 } },
-      { selector: 'node.isolated', style: { 'border-style': 'dashed', 'border-color': '#9aa5b5', opacity: 0.55 } },
+      { selector: 'node[?critical]', style: { shape: 'diamond', 'border-color': '#d99a00', 'border-width': 3 } },
+      { selector: 'node.compromised', style: { 'background-color': '#e5484d', 'border-color': '#b42318' } },
+      { selector: 'node.admin', style: { 'background-color': '#b42318' } },
+      { selector: 'node.sabotaged', style: { 'background-color': '#7c4dff', 'border-color': '#4b1fbf', 'border-width': 4 } },
+      { selector: 'node.isolated', style: { 'border-style': 'dashed', 'border-color': '#475467', 'border-width': 3, opacity: 0.5 } },
       { selector: 'node.monitored', style: { 'overlay-color': '#2f80ed', 'overlay-opacity': 0.12, 'overlay-padding': 6 } },
-      { selector: 'node.honeypot', style: { 'background-color': '#d4a017', 'border-color': '#ffe08a', shape: 'hexagon' } },
+      { selector: 'node.honeypot', style: { 'background-color': '#f5b300', 'border-color': '#a86f00', shape: 'hexagon' } },
       { selector: 'node.hidden, edge.hidden', style: { display: 'none' } },
       { selector: 'node.hot', style: { 'underlay-color': '#ff9f43', 'underlay-padding': 'mapData(susp, 0, 1, 0, 14)', 'underlay-opacity': 0.45, 'underlay-shape': 'ellipse' } },
-      { selector: 'node.focus', style: { 'border-color': '#ffffff', 'border-width': 5 } },
-      { selector: 'edge', style: { width: 1.2, 'line-color': '#2b3a52', 'curve-style': 'bezier' } },
-      { selector: 'edge.attack', style: { width: 3.5, 'line-color': '#ff5b4a', 'target-arrow-shape': 'triangle', 'target-arrow-color': '#ff5b4a' } },
-      { selector: 'edge.cut', style: { 'line-style': 'dashed', 'line-color': '#556070' } },
+      { selector: 'node.focus', style: { 'border-color': '#111827', 'border-width': 5 } },
+      { selector: 'edge', style: { width: 1.2, 'line-color': '#d5dce6', 'curve-style': 'bezier' } },
+      { selector: 'edge.attack', style: { width: 3.5, 'line-color': '#e5484d', 'target-arrow-shape': 'triangle', 'target-arrow-color': '#e5484d' } },
+      { selector: 'edge.cut', style: { 'line-style': 'dashed', 'line-color': '#98a2b3' } },
     ],
   });
 
@@ -68,7 +68,7 @@ export function createTopologyGraph(container) {
     const d = evt.target.data();
     tooltip = document.createElement('div');
     tooltip.className = 'tooltip';
-    tooltip.innerHTML = `<b>${d.label}</b><br>${d.type.replace('_', ' ')} · ${d.dept} · ${d.zone}<br>value ${d.value} · vuln ${d.vuln} · needs ${['-', 'user', 'admin', 'domain'][d.privReq]}<br>suspicion ${(d.susp ?? 0).toFixed(2)}`;
+    tooltip.innerHTML = `<b>${d.label}</b><br>${d.type.replace('_', ' ')} · ${d.dept} department · ${d.zone} zone<br>Importance ${d.value}/10 · weakness ${Math.round(d.vuln * 100)}% · access needed: ${['none', 'user', 'admin', 'domain admin'][d.privReq]}<br>Defender suspicion: ${Math.round((d.susp ?? 0) * 100)}%`;
     document.body.appendChild(tooltip);
     const { x, y } = evt.renderedPosition;
     const rect = container.getBoundingClientRect();
@@ -119,7 +119,7 @@ export function createTopologyGraph(container) {
           if (isAttack) {
             const a = attackEdges.find((x) => x.source === s || x.source === t);
             // orient arrow along the attack direction
-            if (a && a.source === t) e.style({ 'source-arrow-shape': 'triangle', 'source-arrow-color': '#ff5b4a', 'target-arrow-shape': 'none' });
+            if (a && a.source === t) e.style({ 'source-arrow-shape': 'triangle', 'source-arrow-color': '#e5484d', 'target-arrow-shape': 'none' });
           } else e.removeStyle('source-arrow-shape target-arrow-shape');
         });
       });
@@ -149,8 +149,8 @@ export function renderAttackGraph(container, record, labelOf) {
     elements,
     layout: { name: 'breadthfirst', directed: true, roots: [record.summary.foothold], spacingFactor: 1.15 },
     style: [
-      { selector: 'node', style: { 'background-color': 'data(color)', label: 'data(label)', color: '#dfe6f0', 'font-size': 10, 'text-wrap': 'wrap', 'text-valign': 'bottom', 'text-margin-y': 6, width: 26, height: 26 } },
-      { selector: 'edge', style: { 'curve-style': 'bezier', 'target-arrow-shape': 'triangle', 'line-color': '#ff6b5b', 'target-arrow-color': '#ff6b5b', width: 2, label: 'data(label)', color: '#9fb0c8', 'font-size': 9, 'text-background-color': '#111827', 'text-background-opacity': 1 } },
+      { selector: 'node', style: { 'background-color': 'data(color)', label: 'data(label)', color: '#1b2333', 'font-size': 11, 'text-wrap': 'wrap', 'text-valign': 'bottom', 'text-margin-y': 6, width: 26, height: 26 } },
+      { selector: 'edge', style: { 'curve-style': 'bezier', 'target-arrow-shape': 'triangle', 'line-color': '#e5484d', 'target-arrow-color': '#e5484d', width: 2, label: 'data(label)', color: '#475467', 'font-size': 10, 'text-background-color': '#fafbfd', 'text-background-opacity': 1 } },
     ],
   });
   return cy;
