@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   root: 'web',
+  base: process.env.VITE_BASE ?? '/',
   build: { outDir: '../dist', emptyOutDir: true, chunkSizeWarningLimit: 1200 },
   server: {
     port: 5173,
