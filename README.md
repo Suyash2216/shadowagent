@@ -10,6 +10,8 @@ ShadowAgent simulates an isolated enterprise network in which a **red team** (an
 transition is audited, attack paths are reconstructed as multi-hop graphs, choke points are computed,
 and an incident-response playbook is generated automatically.
 
+**Live demo:** https://suyash2216.github.io/shadowagent/ (runs entirely in the browser)
+
 > Everything is an abstract simulation — no real exploits, scanning or network traffic are involved.
 
 ## Architecture
@@ -72,6 +74,17 @@ npm start            # API + dashboard on http://localhost:3000
 
 Development mode with hot reload: `npm run dev:server` in one terminal and `npm run dev:web` in another
 (open http://localhost:5173).
+
+### Static deployment (GitHub Pages)
+
+The core engine has no Node dependencies, so the dashboard also runs fully client-side
+(`web/src/local-api.js`; trained policies are kept in `localStorage`). It falls back to this mode
+automatically when no API server is reachable.
+
+```bash
+VITE_STATIC=1 VITE_BASE=/shadowagent/ npx vite build --outDir site
+# publish site/ to the gh-pages branch
+```
 
 ### Train in JavaScript
 
