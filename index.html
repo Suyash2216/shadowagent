@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShadowAgent · AI attacker vs AI defender</title>
+    <script type="module" crossorigin src="/shadowagent/assets/index-ClCWS4fE.js"></script>
+    <link rel="stylesheet" crossorigin href="/shadowagent/assets/index-BnuQHHeo.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">◆</span>
+        <div>
+          <h1>ShadowAgent</h1>
+          <p>An AI attacker and an AI defender compete inside a simulated company network</p>
+        </div>
+      </div>
+      <form id="controls" class="controls">
+        <label>Company <select id="scenario"></select></label>
+        <label class="red-label">Attacker <select id="red"></select></label>
+        <label class="blue-label">Defender <select id="blue"></select></label>
+        <button type="submit" id="run" class="primary big">▶ Start simulation</button>
+      </form>
+    </header>
+
+    <nav class="steps">
+      <button data-view="watch" class="active"><span class="num">1</span><span><b>Watch an attack</b><small>See one attack happen step by step</small></span></button>
+      <button data-view="test"><span class="num">2</span><span><b>Test security</b><small>Run many attacks and get a score</small></span></button>
+      <button data-view="plan"><span class="num">3</span><span><b>Response plan</b><small>What the company should do</small></span></button>
+      <button data-view="advanced" class="adv"><span class="num">⚙</span><span><b>Advanced</b><small>Logs, attack path, AI training</small></span></button>
+    </nav>
+
+    <main>
+      <!-- STEP 1 -->
+      <section class="view active" id="view-watch">
+        <p class="help">The <b class="red-text">attacker</b> starts on one employee computer and tries to reach and damage the company's most important systems. The <b class="blue-text">defender</b> watches for suspicious activity, blocks infected computers and sets traps.</p>
+        <div class="watch-layout">
+          <section class="card graph-card">
+            <div class="card-head">
+              <h2>Company network</h2>
+              <div class="legend">
+                <span><i class="dot clean"></i>Safe</span>
+                <span><i class="dot compromised"></i>Hacked</span>
+                <span><i class="dot sabotaged"></i>Damaged</span>
+                <span><i class="dot isolated"></i>Blocked</span>
+                <span><i class="dot honeypot"></i>Trap</span>
+                <span><i class="dot critical"></i>Critical system</span>
+              </div>
+            </div>
+            <div id="cy" class="cy"></div>
+            <p class="abbr">WS = employee computer · ADM = admin computer · FS = file server · MX = mail · APP = business app · DB = finance database · BKP = backup · GIT = source code · DC = domain controller · HP = trap. Hover a computer for details.</p>
+            <div class="playback">
+              <button id="play" title="Play / pause">Pause</button>
+              <button id="stepBack" title="Previous step">&laquo; Back</button>
+              <button id="stepFwd" title="Next step">Next &raquo;</button>
+              <input id="timeline" type="range" min="0" max="0" value="0" />
+              <span id="stepLabel">Step 0 of 0</span>
+              <select id="speed" title="Playback speed">
+                <option value="900">Slow</option>
+                <option value="450" selected>Normal</option>
+                <option value="200">Fast</option>
+              </select>
+            </div>
+          </section>
+
+          <aside class="side">
+            <section class="card" id="kpis"></section>
+            <section class="card feed-card">
+              <div class="card-head"><h2>What's happening</h2><span id="feedStep" class="muted"></span></div>
+              <ul id="feed" class="feed"></ul>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <!-- STEP 2 -->
+      <section class="view" id="view-test">
+        <p class="help">One attack can be lucky or unlucky. Here we run many attacks automatically with the attacker and defender chosen above, and measure how well the company holds up.</p>
+        <div class="card">
+          <div class="tool-row">
+            <label>Number of attacks
+              <select id="batchN"><option value="50">50</option><option value="100" selected>100</option><option value="500">500</option></select>
+            </label>
+            <button id="batchBtn" class="primary big">Run test attacks</button>
+            <span id="batchStatus" class="muted"></span>
+          </div>
+          <div id="analyticsBody" class="analytics"><p class="empty">Click <b>Run test attacks</b> to get a security score for this company.</p></div>
+        </div>
+      </section>
+
+      <!-- STEP 3 -->
+      <section class="view" id="view-plan">
+        <p class="help">From the test results, ShadowAgent writes an incident-response plan: what happened, the weakest points, and step-by-step actions for the security team.</p>
+        <div class="card">
+          <div class="tool-row">
+            <button id="planBtn" class="primary big">Generate response plan</button>
+            <button id="downloadPlaybook">Download plan</button>
+            <span id="planStatus" class="muted"></span>
+          </div>
+          <article id="playbook" class="markdown"><p class="empty">Click <b>Generate response plan</b>. It runs 100 test attacks and writes the plan from the results.</p></article>
+        </div>
+      </section>
+
+      <!-- ADVANCED -->
+      <section class="view" id="view-advanced">
+        <nav class="subtabs">
+          <button data-tab="attack" class="active">Attack path</button>
+          <button data-tab="audit">Full event log</button>
+          <button data-tab="training">Train the AI</button>
+          <button data-tab="settings">Settings</button>
+        </nav>
+        <div class="card">
+          <div class="tab active" id="tab-attack">
+            <p class="muted">The route the attacker took in the last simulation, from the first computer to the systems it damaged. Labels show the step number.</p>
+            <div id="attackCy" class="cy small"></div>
+          </div>
+
+          <div class="tab" id="tab-audit">
+            <div class="tool-row">
+              <label>Show <select id="auditFilter"><option value="all">everyone</option><option value="red">attacker only</option><option value="blue">defender only</option><option value="system">system</option></select></label>
+              <label class="check"><input type="checkbox" id="auditSuccess" /> successful actions only</label>
+            </div>
+            <p class="muted">Every action in the last simulation. Click a row to jump to that moment in Step 1.</p>
+            <div class="table-wrap"><table id="auditTable"><thead><tr><th>Step</th><th>Who</th><th>Action</th><th>Target</th><th>Worked?</th><th>Details</th></tr></thead><tbody></tbody></table></div>
+          </div>
+
+          <div class="tab" id="tab-training">
+            <p class="muted">The "Smart AI" agents learn by playing thousands of games against each other (reinforcement learning). Train them here, then pick "Smart AI" in the top bar to use the new version.</p>
+            <div class="tool-row">
+              <label>Practice games <select id="trainN"><option value="1000">1,000</option><option value="2000" selected>2,000</option><option value="5000">5,000</option></select></label>
+              <label class="check"><input type="checkbox" id="trainResume" checked /> continue from current AI</label>
+              <button id="trainBtn" class="primary">Train the AI</button>
+              <span id="trainStatus" class="muted"></span>
+            </div>
+            <div class="charts-row">
+              <div class="chart-box"><canvas id="trainReturns"></canvas></div>
+              <div class="chart-box"><canvas id="trainOutcomes"></canvas></div>
+            </div>
+            <p class="muted small-note">Python trainer: <code>python -m shadowagent_ml.train --episodes 300 --upload</code> (needs the Node server).</p>
+          </div>
+
+          <div class="tab" id="tab-settings">
+            <div class="tool-row">
+              <label>Random seed <input id="seed" type="number" value="7" min="0" /></label>
+              <span class="muted">The same seed always gives the same company and the same attack, so results can be repeated. Change it to see a different scenario, then press Start simulation.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
